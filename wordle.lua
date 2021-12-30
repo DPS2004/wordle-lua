@@ -1,5 +1,27 @@
 local wordle = {}
 
+function wordle.clone(orig, copies)
+  copies = copies or {}
+  local orig_type = type(orig)
+  local copy
+  if orig_type == 'table' then
+    if copies[orig] then
+      copy = copies[orig]
+    else
+      copy = {}
+      copies[orig] = copy
+      for orig_key, orig_value in next, orig, nil do
+        copy[wordle.clone(orig_key, copies)] = wordle.clone(orig_value, copies)
+      end
+      setmetatable(copy, wordle.clone(getmetatable(orig), copies))
+    end
+  else
+    copy = orig
+  end
+  return copy
+end
+
+
 
 function wordle.new(word,wordlist,newconfig)
   newconfig = newconfig or {}
@@ -9,8 +31,18 @@ function wordle.new(word,wordlist,newconfig)
     config = {
       guesses = 6,
       wordlength = 5,
-      checkwords = true
+      checkwords = true,
+      hardmode = false
     },
+    known = {
+      grey = {},
+      goodletters = {},
+      greens = {},
+      lastgoodletters = {},
+      lastgreens = {},
+      lastgrey = {}
+    },
+    
     guesses = {}
   }
   
@@ -99,6 +131,83 @@ function wordle.new(word,wordlist,newconfig)
         end
       end
     end
+    
+    
+    self.known.lastgoodletters = wordle.clone(self.known.goodletters)
+    self.known.lastgreens = wordle.clone(self.known.greens)
+    self.known.lastgrey = wordle.clone(self.known.grey)
+    
+    self.known.goodletters = {}
+    self.known.greens = {}
+      
+      
+    for i,v in ipairs(newguess) do
+      if v.color == 2 then
+        table.insert(self.known.greens,{i=i,letter=v.letter})
+        if not self.known.goodletters[v.letter] then
+          self.known.goodletters[v.letter] = 1
+        else
+          self.known.goodletters[v.letter] = self.known.goodletters[v.letter] + 1
+        end
+      elseif v.color == 1 then
+        if not self.known.goodletters[v.letter] then
+          self.known.goodletters[v.letter] = 1
+        else
+          self.known.goodletters[v.letter] = self.known.goodletters[v.letter] + 1
+        end
+      else
+        if not self.known.grey[v.letter] then
+          self.known.grey[v.letter] = true
+        end
+      end
+      
+    end
+    
+    if self.config.hardmode then
+      for i,v in ipairs(newguess) do
+        if self.known.lastgrey[v.letter] then
+          output.t = 'hardmodefail'
+          output.t2 = 'knowngrey'
+          output.t3 = v.letter
+          
+          self.known.grey = wordle.clone(self.known.lastgrey)
+          self.known.goodletters = wordle.clone(self.known.lastgoodletters)
+          self.known.green = wordle.clone(self.known.lastgreen)
+          
+          return output
+        end
+        
+      end
+      
+      for k,v in pairs(self.known.lastgoodletters) do
+        
+        local failed = false
+        
+        if not self.known.goodletters[k] then
+          failed = true
+        elseif self.known.goodletters[k] < v then
+          failed = true
+        end
+        
+        
+          
+        if failed then
+          output.t = 'hardmodefail'
+          output.t2 = 'notenoughyellow'
+          output.t3 = k
+          output.t4 = self.known.goodletters[k] or 0
+          output.t5 = v
+          
+          self.known.grey = wordle.clone(self.known.lastgrey)
+          self.known.goodletters = wordle.clone(self.known.lastgoodletters)
+          self.known.green = wordle.clone(self.known.lastgreen)
+          
+          return output
+        end
+      end
+      
+    end
+      
     
     output.guess = newguess
     table.insert(self.guesses,newguess)

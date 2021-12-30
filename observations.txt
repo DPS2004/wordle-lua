@@ -10,3 +10,14 @@ TROLL
 GGGGG
 
 if there are too many of a letter, it only marks the first incorrect occurances as yellow.
+
+
+BUG:
+play this sequence of guesses on the word 'chafe' with hard mode on.
+
+audio
+grass
+clamp
+chant
+chaff
+chafe
