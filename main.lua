@@ -31,7 +31,18 @@ while true do
         resultstr = resultstr .. '.'
       end
     end
-    print(resultstr)
+    print(resultstr..'\n You have '..game.config.guesses - #game.guesses..' guesses left.\n')
+  elseif output.t == 'nomoreguesses' then
+    print('You have '..game.config.guesses - #game.guesses..' guesses left.\n')
+  elseif output.t == 'toomany' then
+    print('That is too many letters! Your guess should have '..game.config.wordlength..' letters.')
+  elseif output.t == 'toofew' then
+    print('That is too few letters! Your guess should have '..game.config.wordlength..' letters.')
+  elseif output.t == 'notaword' then
+    print(newguess..' is not a valid word!')
+  elseif output.t == 'complete' then
+    print('Congratulations! ' .. game.word .. ' was the correct word. You got it in '.. #game.guesses..' guesses.')
+  elseif output.t == 'gameover' then
+    print('Game over. The correct answer was '.. game.word..'.')
   end
-  print(output.t)
 end

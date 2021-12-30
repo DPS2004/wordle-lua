@@ -9,6 +9,7 @@ function wordle.new(word,wordlist,newconfig)
     config = {
       guesses = 6,
       wordlength = 5,
+      checkwords = true
     },
     guesses = {}
   }
@@ -22,6 +23,7 @@ function wordle.new(word,wordlist,newconfig)
   end
   
   function game:guess(strguess)
+    strguess = string.lower(strguess)
     
     local output = {}
     
@@ -39,6 +41,20 @@ function wordle.new(word,wordlist,newconfig)
       output.t = "toomany"
       return output
     end
+    
+    if self.config.checkwords then
+      local goodword = false
+      for i,v in ipairs(self.wordlist) do
+        if strguess == v then
+          goodword = true
+        end
+      end
+      if not goodword then
+        output.t = "notaword"
+        return output
+      end
+    end
+    
     --if you have gotten here, it is a valid guess.
     
     
@@ -89,8 +105,14 @@ function wordle.new(word,wordlist,newconfig)
     if greens == self.config.wordlength then
       output.t = 'complete'
     else
-      output.t = 'incomplete'
+      if #self.guesses >= self.config.guesses then
+        output.t = 'gameover'
+      else
+        output.t = 'incomplete'
+      end
     end
+    
+    
     
     return output
     
