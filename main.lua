@@ -17,5 +17,21 @@ end
 wordle = require('wordle')
 
 game = wordle.new(get_random_word(),sgbwords)
-
-game:guess('hello')
+while true do
+  local newguess = io.read()
+  output = game:guess(newguess)
+  if output.t == 'incomplete' then
+    local resultstr = ''
+    for i,v in ipairs(output.guess) do
+      if v.color == 2 then
+        resultstr = resultstr .. 'G'
+      elseif v.color == 1 then
+        resultstr = resultstr .. 'y'
+      else
+        resultstr = resultstr .. '.'
+      end
+    end
+    print(resultstr)
+  end
+  print(output.t)
+end
