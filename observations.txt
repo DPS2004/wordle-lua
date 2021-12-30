@@ -1,0 +1,12 @@
+in the case where the word is "TROLL":
+
+ROLLS
+yyyG.
+
+LOLLY
+yy.G.
+
+TROLL
+GGGGG
+
+if there are too many of a letter, it only marks the first incorrect occurances as yellow.
