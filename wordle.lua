@@ -70,7 +70,11 @@ function wordle.new(word,wordlist,newconfig)
         greens = greens + 1
         v.color = 2
         letterbank[v.letter] = letterbank[v.letter] - 1
-      else
+      end
+    end
+    
+    for i,v in ipairs(newguess) do
+      if v.color ~= 2 then
         if letterbank[v.letter] then
           if letterbank[v.letter] ~= 0 then
             v.color = 1
@@ -78,7 +82,6 @@ function wordle.new(word,wordlist,newconfig)
           end
         end
       end
-      
     end
     
     output.guess = newguess

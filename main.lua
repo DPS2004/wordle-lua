@@ -16,7 +16,7 @@ end
 
 wordle = require('wordle')
 
-game = wordle.new(get_random_word(),sgbwords)
+game = wordle.new('noisy',sgbwords)
 while true do
   local newguess = io.read()
   output = game:guess(newguess)
